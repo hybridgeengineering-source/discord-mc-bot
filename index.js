@@ -31,7 +31,7 @@ client.on("interactionCreate", async i => {
   if (!i.isChatInputCommand()) return;
 
   if (i.commandName === "status") {
-    i.reply(`🟢 Online: ${data.online объяс}/${data.max}`);
+    i.reply(`🟢 Online: ${data.online}/${data.max}`);
   }
 
   if (i.commandName === "players") {
