@@ -1,46 +1,27 @@
-const { Client, GatewayIntentBits } = require("discord.js");
-const express = require("express");
+const { REST, Routes } = require("discord.js");
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
-const app = express();
-
-let data = {
-  online: 0,
-  max: 0,
-  modes: {}
-};
-
-app.use(express.json());
-
-app.post("/update", (req, res) => {
-  data = req.body;
-  res.send("OK");
-});
-
-app.get("/", (_, res) => {
-  res.send("Bot online");
-});
-
-app.listen(3000);
-
-client.on("ready", () => {
-  console.log("Bot encendido");
-});
-
-client.on("interactionCreate", async i => {
-  if (!i.isChatInputCommand()) return;
-
-  if (i.commandName === "status") {
-    i.reply(`🟢 Online: ${data.online объяс}/${data.max}`);
+const commands = [
+  {
+    name: "status",
+    description: "Muestra el estado del servidor"
+  },
+  {
+    name: "players",
+    description: "Muestra los jugadores por modalidad"
   }
+];
 
-  if (i.commandName === "players") {
-    let msg = "🎮 Players por modalidad\n";
-    for (const m in data.modes) {
-      msg += `**${m}**: ${data.modes[m]}\n`;
-    }
-    i.reply(msg);
+const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
+
+(async () => {
+  try {
+    console.log("Registrando comandos...");
+    await rest.put(
+      Routes.applicationCommands(process.env.CLIENT_ID),
+      { body: commands }
+    );
+    console.log("Comandos listos");
+  } catch (e) {
+    console.error(e);
   }
-});
-
-client.login(process.env.TOKEN);;
+})();
